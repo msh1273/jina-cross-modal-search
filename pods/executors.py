@@ -227,7 +227,7 @@ class NumpyIndexer(Executor):
         self._docs.extend(docs)
 
     @requests(on='/search')
-    def search(self, docs: 'DocumentArray', parameters: Dict = {'top_k': 5}, **kwargs):
+    def search(self, docs: 'DocumentArray', parameters: Dict = {'top_k': 10}, **kwargs):
         if not docs:
             return
         embedding_list = docs.get_attributes('embedding')
@@ -236,7 +236,7 @@ class NumpyIndexer(Executor):
         doc_embeddings = np.stack(embedding_list)
         q_emb = _ext_A(_norm(doc_embeddings))
         dists = _cosine(q_emb, self._embedding_matrix)
-        positions, dist = self._get_sorted_top_k(dists, int(parameters.get('top_k', 5)))
+        positions, dist = self._get_sorted_top_k(dists, int(parameters.get('top_k', 10)))
         for _q, _positions, _dists in zip(docs, positions, dist):
             l = []
             for position, _dist in zip(_positions, _dists):
